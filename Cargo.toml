@@ -1,0 +1,13 @@
+[package]
+name = "module_db"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+farc = { git = "https://github.com/BroGamer4256/farc", default-features = false }
+itertools = "0.14"
+serde = { version = "1.0", features = ["derive"] }
+serde_divatree = { git = "https://github.com/BroGamer4256/serde_divatree" }
+serde_with = { version = "3.12", features = ["macros"] }
+tokio = { version = "1.43", features = ["full"] }
+toml = "0.8"
