@@ -65,7 +65,7 @@ pub struct Module {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct Customize {
+pub struct CustomizeItem {
     pub bind_module: Option<i32>,
     pub chara: Chara,
     pub part: ItemPart,
@@ -84,7 +84,7 @@ pub struct Customize {
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ModuleDb {
     pub modules: BTreeMap<i32, Module>,
-    pub cstm_items: BTreeMap<i32, Customize>,
+    pub cstm_items: BTreeMap<i32, CustomizeItem>,
 }
 
 impl ModuleDb {
@@ -131,7 +131,7 @@ impl ModuleDb {
             for cstm_item in gm_customize_item_tbl.data {
                 module_db.cstm_items.insert(
                     cstm_item.id,
-                    Customize {
+                    CustomizeItem {
                         bind_module: cstm_item.bind_module,
                         chara: cstm_item.chara,
                         part: cstm_item.parts,
