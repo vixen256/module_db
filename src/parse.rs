@@ -12,13 +12,13 @@ pub struct Module {
     pub name: String,
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone)]
 pub struct Costume {
     pub id: i32,
     pub item: Vec<i32>,
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone)]
 pub struct CstmItem {
     pub bind_module: Option<i32>,
     pub chara: crate::Chara,
@@ -27,7 +27,7 @@ pub struct CstmItem {
     pub parts: crate::ItemPart,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct DivaTbl<T> {
     pub data: Vec<T>,
 }
@@ -178,7 +178,7 @@ impl CstmItem {
     }
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone)]
 pub struct ModStringArray {
     #[serde(flatten)]
     pub data: Option<ModStringArrayData>,
@@ -193,7 +193,7 @@ pub struct ModStringArray {
 }
 
 #[serde_as]
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone)]
 pub struct ModStringArrayData {
     #[serde_as(as = "Option<BTreeMap<DisplayFromStr, _>>")]
     pub module: Option<BTreeMap<i32, String>>,

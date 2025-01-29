@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 
 mod parse;
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Chara {
     #[serde(rename = "MIK")]
@@ -32,7 +32,7 @@ pub enum Chara {
     All,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ItemPart {
     Kami,
@@ -42,13 +42,13 @@ pub enum ItemPart {
     Back,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Costume {
     pub id: i32,
     pub items: Vec<i32>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Module {
     pub cos: Costume,
     pub chara: Chara,
@@ -64,7 +64,7 @@ pub struct Module {
     pub name_tw: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Customize {
     pub bind_module: Option<i32>,
     pub chara: Chara,
@@ -81,7 +81,7 @@ pub struct Customize {
     pub name_tw: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ModuleDb {
     pub modules: BTreeMap<i32, Module>,
     pub cstm_items: BTreeMap<i32, Customize>,
@@ -306,18 +306,5 @@ impl ModuleDb {
         };
 
         Self::from_files(module_tbl, customize_tbl, chritm_prop, mod_str_array).await
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn read_mod() {
-        let db = ModuleDb::from_folder("/home/brogamer/Downloads/Interviewer Rin/rom")
-            .await
-            .unwrap();
-        dbg!(db);
     }
 }
