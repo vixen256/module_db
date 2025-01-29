@@ -7,26 +7,35 @@ mod parse;
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Chara {
     #[serde(rename = "MIK")]
+    #[serde(alias = "MIKU")]
     Miku,
     #[serde(rename = "RIN")]
     Rin,
     #[serde(rename = "LEN")]
     Len,
     #[serde(rename = "LUK")]
+    #[serde(alias = "LUKA")]
     Luka,
     #[serde(rename = "NER")]
+    #[serde(alias = "NERU")]
     Neru,
     #[serde(rename = "HAK")]
+    #[serde(alias = "HAKU")]
     Haku,
     #[serde(rename = "KAI")]
+    #[serde(alias = "KAITO")]
     Kaito,
     #[serde(rename = "MEI")]
+    #[serde(alias = "MEIKO")]
     Meiko,
     #[serde(rename = "SAK")]
+    #[serde(alias = "SAKINE")]
     Sakine,
     #[serde(rename = "TET")]
+    #[serde(alias = "TETO")]
     Teto,
     #[serde(rename = "EXT")]
+    #[serde(alias = "EXTRA")]
     Extra,
     #[serde(rename = "ALL")]
     All,
