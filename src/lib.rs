@@ -41,6 +41,25 @@ pub enum Chara {
     All,
 }
 
+impl ToString for Chara {
+    fn to_string(&self) -> String {
+        String::from(match self {
+            Chara::Miku => "Miku",
+            Chara::Rin => "Rin",
+            Chara::Len => "Len",
+            Chara::Luka => "Luka",
+            Chara::Neru => "Neru",
+            Chara::Haku => "Haku",
+            Chara::Kaito => "Kaito",
+            Chara::Meiko => "Meiko",
+            Chara::Sakine => "Sakine",
+            Chara::Teto => "Teto",
+            Chara::Extra => "Extra",
+            Chara::All => "All",
+        })
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ItemPart {
