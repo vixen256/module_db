@@ -44,18 +44,18 @@ pub enum Chara {
 impl ToString for Chara {
     fn to_string(&self) -> String {
         String::from(match self {
-            Chara::Miku => "Miku",
-            Chara::Rin => "Rin",
-            Chara::Len => "Len",
-            Chara::Luka => "Luka",
-            Chara::Neru => "Neru",
-            Chara::Haku => "Haku",
-            Chara::Kaito => "Kaito",
-            Chara::Meiko => "Meiko",
-            Chara::Sakine => "Sakine",
-            Chara::Teto => "Teto",
-            Chara::Extra => "Extra",
-            Chara::All => "All",
+            Self::Miku => "Miku",
+            Self::Rin => "Rin",
+            Self::Len => "Len",
+            Self::Luka => "Luka",
+            Self::Neru => "Neru",
+            Self::Haku => "Haku",
+            Self::Kaito => "Kaito",
+            Self::Meiko => "Meiko",
+            Self::Sakine => "Sakine",
+            Self::Teto => "Teto",
+            Self::Extra => "Extra",
+            Self::All => "All",
         })
     }
 }
@@ -68,6 +68,18 @@ pub enum ItemPart {
     Neck,
     Zujo,
     Back,
+}
+
+impl ToString for ItemPart {
+    fn to_string(&self) -> String {
+        String::from(match self {
+            Self::Kami => "Hair (Kami)",
+            Self::Face => "Face",
+            Self::Neck => "Neck",
+            Self::Zujo => "Hat (Zujo)",
+            Self::Back => "Back",
+        })
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone)]
