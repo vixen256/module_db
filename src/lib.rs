@@ -83,9 +83,146 @@ impl ToString for ItemPart {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+#[repr(i32)]
+pub enum ItemSub {
+    Zujo = 0,
+    Kami = 1,
+    Hitai = 2,
+    Me = 3,
+    Megane = 4,
+    Mimi = 5,
+    Kuchi = 6,
+    Maki = 7,
+    Kubi = 8,
+    Inner = 9,
+    Outer = 10,
+    Kata = 11,
+    UUde = 12,
+    LUde = 13,
+    Te = 14,
+    JohaMae = 15,
+    JohaUshiro = 16,
+    Belt = 17,
+    Kosi = 18,
+    Pants = 19,
+    Asi = 20,
+    Sune = 21,
+    Kutsu = 22,
+    Hada = 23,
+    Head = 24,
+}
+
+impl Into<i32> for ItemSub {
+    fn into(self) -> i32 {
+        match self {
+            ItemSub::Zujo => 0,
+            ItemSub::Kami => 1,
+            ItemSub::Hitai => 2,
+            ItemSub::Me => 3,
+            ItemSub::Megane => 4,
+            ItemSub::Mimi => 5,
+            ItemSub::Kuchi => 6,
+            ItemSub::Maki => 7,
+            ItemSub::Kubi => 8,
+            ItemSub::Inner => 9,
+            ItemSub::Outer => 10,
+            ItemSub::Kata => 11,
+            ItemSub::UUde => 12,
+            ItemSub::LUde => 13,
+            ItemSub::Te => 14,
+            ItemSub::JohaMae => 15,
+            ItemSub::JohaUshiro => 16,
+            ItemSub::Belt => 17,
+            ItemSub::Kosi => 18,
+            ItemSub::Pants => 19,
+            ItemSub::Asi => 20,
+            ItemSub::Sune => 21,
+            ItemSub::Kutsu => 22,
+            ItemSub::Hada => 23,
+            ItemSub::Head => 24,
+        }
+    }
+}
+
+impl TryFrom<i32> for ItemSub {
+    type Error = String;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        Ok(match value {
+            0 => Self::Zujo,
+            1 => Self::Kami,
+            2 => Self::Hitai,
+            3 => Self::Me,
+            4 => Self::Megane,
+            5 => Self::Mimi,
+            6 => Self::Kuchi,
+            7 => Self::Maki,
+            8 => Self::Kubi,
+            9 => Self::Inner,
+            10 => Self::Outer,
+            11 => Self::Kata,
+            12 => Self::UUde,
+            13 => Self::LUde,
+            14 => Self::Te,
+            15 => Self::JohaMae,
+            16 => Self::JohaUshiro,
+            17 => Self::Belt,
+            18 => Self::Kosi,
+            19 => Self::Pants,
+            20 => Self::Asi,
+            21 => Self::Sune,
+            22 => Self::Kutsu,
+            23 => Self::Hada,
+            24 => Self::Head,
+            _ => return Err(format!("Invalid value for ItemSub: {}", value)),
+        })
+    }
+}
+
+impl ToString for ItemSub {
+    fn to_string(&self) -> String {
+        String::from(match self {
+            ItemSub::Zujo => "Hat (Zujo)",
+            ItemSub::Kami => "Hair (Kami)",
+            ItemSub::Hitai => "Forehead (Hitai)",
+            ItemSub::Me => "Eye (Me)",
+            ItemSub::Megane => "Glasses (Megane)",
+            ItemSub::Mimi => "Ears (Mimi)",
+            ItemSub::Kuchi => "Mouth (Kuchi)",
+            ItemSub::Maki => "Neck (Maki)",
+            ItemSub::Kubi => "Collar (Kubi)",
+            ItemSub::Inner => "Body (Inner)",
+            ItemSub::Outer => "Outfit (Outer)",
+            ItemSub::Kata => "Shoulder (Kata)",
+            ItemSub::UUde => "Right Arm (Ude)",
+            ItemSub::LUde => "Left Arm (Ude)",
+            ItemSub::Te => "Hands (Te)",
+            ItemSub::JohaMae => "Chest (Joha Mae)",
+            ItemSub::JohaUshiro => "Back (Joha Ushiro)",
+            ItemSub::Belt => "Belt",
+            ItemSub::Kosi => "Crotch (Kosi)",
+            ItemSub::Pants => "Pants",
+            ItemSub::Asi => "Legs (Asi)",
+            ItemSub::Sune => "Feet (Sune)",
+            ItemSub::Kutsu => "Shoes (Kutsu)",
+            ItemSub::Hada => "Skin (Hada)",
+            ItemSub::Head => "Head",
+        })
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Costume {
     pub id: i32,
-    pub items: Vec<i32>,
+    pub items: Vec<CostumeItem>,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct CostumeItem {
+    pub id: i32,
+    pub objset: Vec<String>,
+    pub sub: ItemSub,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -190,18 +327,37 @@ impl ModuleDb {
             }
         }
 
-        if let Some(chritm_prop) = chritm_prop {
-            let chritm_prop = parse::Costume::parse(chritm_prop).await?;
+        if let Some(chritm_prop) = &chritm_prop {
+            // Suboptimal, parsing twice here
+            let modules = parse::Costume::parse(chritm_prop).await?;
+            let items = parse::CostumeItem::parse(chritm_prop).await?;
             for (_, module) in &mut module_db.modules {
-                if let Some(prop) = chritm_prop.get(&module.chara) {
-                    if let Some(cos) = prop
-                        .data
-                        .iter()
-                        .filter(|cos| cos.id == module.cos.id)
-                        .next()
-                    {
-                        module.cos.items = cos.item.clone();
-                    }
+                let Some(costumes) = modules.get(&module.chara) else {
+                    println!("Couldnt get costumes for chara");
+                    continue;
+                };
+                let Some(items) = items.get(&module.chara) else {
+                    println!("Couldnt get items for chara");
+                    continue;
+                };
+                let Some(cos) = costumes
+                    .data
+                    .iter()
+                    .filter(|cos| cos.id == module.cos.id)
+                    .next()
+                else {
+                    println!("Couldnt get costume {}", module.cos.id);
+                    continue;
+                };
+                for item in &cos.item {
+                    let Some(item) = items.data.iter().filter(|itm| itm.no == *item).next() else {
+                        println!("Couldnt get item {item}");
+                        continue;
+                    };
+                    let Ok(item) = item.clone().try_into() else {
+                        continue;
+                    };
+                    module.cos.items.push(item);
                 }
             }
         }

@@ -19,6 +19,13 @@ pub struct Costume {
 }
 
 #[derive(Deserialize, Clone)]
+pub struct CostumeItem {
+    pub no: i32,
+    pub objset: Vec<String>,
+    pub sub_id: i32,
+}
+
+#[derive(Deserialize, Clone)]
 pub struct CstmItem {
     pub bind_module: Option<i32>,
     pub chara: crate::Chara,
@@ -143,7 +150,13 @@ impl Costume {
             };
             let buf = data.to_buf_const()?;
             let data = String::from_utf8(buf.to_vec()).ok()?;
-            let data = serde_divatree::from_str(&clean_input(&data)).ok()?;
+            let data = clean_input(&data);
+            let data = data
+                .lines()
+                .filter(|line| line.starts_with("cos."))
+                .collect::<Vec<_>>()
+                .join("\n");
+            let data = serde_divatree::from_str(&data).ok()?;
             map.insert(chara, data);
         }
 
@@ -152,6 +165,72 @@ impl Costume {
         } else {
             Some(map)
         }
+    }
+}
+
+impl CostumeItem {
+    pub async fn parse<P: AsRef<std::path::Path>>(
+        path: P,
+    ) -> Option<BTreeMap<crate::Chara, DivaTbl<Self>>> {
+        let path = path.as_ref();
+        if !path.exists() {
+            return None;
+        }
+        if !path.to_str()?.ends_with("chritm_prop.farc") {
+            return None;
+        }
+
+        let mut map = BTreeMap::new();
+        let farc = farc::Farc::from_file(path).ok()?;
+        for (name, data) in farc.entries {
+            if !name.ends_with("itm_tbl.txt") {
+                continue;
+            }
+            let chara = match name.trim_end_matches("itm_tbl.txt") {
+                "mik" => crate::Chara::Miku,
+                "rin" => crate::Chara::Rin,
+                "len" => crate::Chara::Len,
+                "luk" => crate::Chara::Luka,
+                "ner" => crate::Chara::Neru,
+                "hak" => crate::Chara::Haku,
+                "kai" => crate::Chara::Kaito,
+                "mei" => crate::Chara::Meiko,
+                "sak" => crate::Chara::Sakine,
+                "tet" => crate::Chara::Teto,
+                "ext" => crate::Chara::Extra,
+                _ => continue,
+            };
+            let buf = data.to_buf_const()?;
+            let data = String::from_utf8(buf.to_vec()).ok()?;
+            let data = clean_input(&data);
+            let data = data
+                .lines()
+                .filter(|line| line.starts_with("item."))
+                .collect::<Vec<_>>()
+                .join("\n");
+            let data = serde_divatree::from_str(&data).ok()?;
+            map.insert(chara, data);
+        }
+
+        if map.len() == 0 {
+            None
+        } else {
+            Some(map)
+        }
+    }
+}
+
+impl TryInto<crate::CostumeItem> for CostumeItem {
+    type Error = String;
+
+    fn try_into(self) -> Result<crate::CostumeItem, Self::Error> {
+        let sub = self.sub_id.try_into()?;
+
+        Ok(crate::CostumeItem {
+            id: self.no,
+            objset: self.objset,
+            sub,
+        })
     }
 }
 
