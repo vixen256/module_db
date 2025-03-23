@@ -60,7 +60,7 @@ impl ToString for Chara {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ItemPart {
     Kami,
@@ -82,7 +82,7 @@ impl ToString for ItemPart {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 #[repr(i32)]
 pub enum ItemSub {
@@ -212,20 +212,20 @@ impl ToString for ItemSub {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Costume {
     pub id: i32,
     pub items: Vec<CostumeItem>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct CostumeItem {
     pub id: i32,
     pub objset: Vec<String>,
     pub sub: ItemSub,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Module {
     pub cos: Costume,
     pub chara: Chara,
@@ -241,7 +241,7 @@ pub struct Module {
     pub name_tw: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct CustomizeItem {
     pub bind_module: Option<i32>,
     pub chara: Chara,
@@ -351,7 +351,13 @@ impl ModuleDb {
                 };
                 for item in &cos.item {
                     let Some(item) = items.data.iter().filter(|itm| itm.no == *item).next() else {
-                        println!("Couldnt get item {item}");
+                        println!("Couldnt get item {item} for costume {}", module.cos.id);
+                        // Put in a temporary item that we replace later
+                        module.cos.items.push(CostumeItem {
+                            id: *item,
+                            objset: Vec::new(),
+                            sub: ItemSub::Te,
+                        });
                         continue;
                     };
                     let Ok(item) = item.clone().try_into() else {
