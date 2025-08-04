@@ -60,6 +60,28 @@ impl ToString for Chara {
     }
 }
 
+impl TryFrom<i32> for Chara {
+    type Error = String;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        Ok(match value {
+            0 => Self::Miku,
+            1 => Self::Rin,
+            2 => Self::Len,
+            3 => Self::Luka,
+            4 => Self::Neru,
+            5 => Self::Haku,
+            6 => Self::Kaito,
+            7 => Self::Meiko,
+            8 => Self::Sakine,
+            9 => Self::Teto,
+            10 => Self::Extra,
+            11 => Self::All,
+            _ => return Err(format!("Invalid value for Chara: {}", value)),
+        })
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ItemPart {
