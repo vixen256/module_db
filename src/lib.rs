@@ -541,17 +541,3 @@ impl ModuleDb {
         Self::from_files(module_tbl, customize_tbl, chritm_prop, mod_str_array).await
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[tokio::test]
-    async fn test() {
-        let modules = ModuleDb::from_folder(
-            "/home/vixen/gb-parser/extracted/Popipo f dlc accessories & F2nd glasses/rom/",
-        )
-        .await
-        .unwrap();
-        dbg!(modules.cstm_items.len());
-    }
-}
