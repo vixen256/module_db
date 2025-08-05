@@ -89,6 +89,7 @@ pub fn clean_input(input: &str) -> String {
         .lines()
         .dedup()
         .filter(|line| line.contains('='))
+        .map(|line| line.trim())
         .collect::<Vec<_>>()
         .join("\n")
 }
@@ -112,7 +113,12 @@ impl Module {
             return None;
         };
 
-        serde_divatree::from_str(&clean_input(&contents)).ok()
+        let data = clean_input(&contents);
+        if data.len() > 0 {
+            serde_divatree::from_str(&data).ok()
+        } else {
+            None
+        }
     }
 }
 
@@ -154,10 +160,14 @@ impl Costume {
             let data = data
                 .lines()
                 .filter(|line| line.starts_with("cos."))
+                .map(|line| line.trim_start_matches("cos.").trim())
                 .collect::<Vec<_>>()
                 .join("\n");
-            let data = serde_divatree::from_str(&data).ok()?;
-            map.insert(chara, data);
+
+            if data.len() > 0 {
+                let data = serde_divatree::from_str(&data).ok()?;
+                map.insert(chara, data);
+            }
         }
 
         if map.len() == 0 {
@@ -206,10 +216,14 @@ impl CostumeItem {
             let data = data
                 .lines()
                 .filter(|line| line.starts_with("item."))
+                .map(|line| line.trim_start_matches("item.").trim())
                 .collect::<Vec<_>>()
                 .join("\n");
-            let data = serde_divatree::from_str(&data).ok()?;
-            map.insert(chara, data);
+
+            if data.len() > 0 {
+                let data = serde_divatree::from_str(&data).ok()?;
+                map.insert(chara, data);
+            }
         }
 
         if map.len() == 0 {
@@ -253,7 +267,14 @@ impl CstmItem {
             return None;
         };
 
-        serde_divatree::from_str(&clean_input(&contents)).ok()
+        let data = clean_input(&contents)
+            .replace("cstm_item.", "")
+            .replace("data_list.", "");
+        if data.len() > 0 {
+            serde_divatree::from_str(&data).ok()
+        } else {
+            None
+        }
     }
 }
 

@@ -299,60 +299,68 @@ impl ModuleDb {
         };
 
         if let Some(gm_module_tbl) = gm_module_tbl {
-            let gm_module_tbl = parse::Module::parse(gm_module_tbl).await?;
-            for module in gm_module_tbl.data {
-                let cos = module.cos.trim_start_matches("COS_").parse::<i32>().ok()? - 1;
-                module_db.modules.insert(
-                    module.id,
-                    Module {
-                        cos: Costume {
-                            id: cos,
-                            items: vec![],
+            if let Some(gm_module_tbl) = parse::Module::parse(gm_module_tbl).await {
+                for module in gm_module_tbl.data {
+                    let cos = module.cos.trim_start_matches("COS_").parse::<i32>().ok()? - 1;
+                    module_db.modules.insert(
+                        module.id,
+                        Module {
+                            cos: Costume {
+                                id: cos,
+                                items: vec![],
+                            },
+                            chara: module.chara,
+                            name: None,
+                            name_jp: Some(module.name.clone()),
+                            name_en: None,
+                            name_cn: None,
+                            name_fr: None,
+                            name_ge: None,
+                            name_it: None,
+                            name_kr: None,
+                            name_sp: None,
+                            name_tw: None,
                         },
-                        chara: module.chara,
-                        name: None,
-                        name_jp: Some(module.name.clone()),
-                        name_en: None,
-                        name_cn: None,
-                        name_fr: None,
-                        name_ge: None,
-                        name_it: None,
-                        name_kr: None,
-                        name_sp: None,
-                        name_tw: None,
-                    },
-                );
+                    );
+                }
             }
         }
 
         if let Some(gm_customize_item_tbl) = gm_customize_item_tbl {
-            let gm_customize_item_tbl = parse::CstmItem::parse(gm_customize_item_tbl).await?;
-            for cstm_item in gm_customize_item_tbl.data {
-                module_db.cstm_items.insert(
-                    cstm_item.id,
-                    CustomizeItem {
-                        bind_module: cstm_item.bind_module,
-                        chara: cstm_item.chara,
-                        part: cstm_item.parts,
-                        name: None,
-                        name_jp: Some(cstm_item.name.clone()),
-                        name_en: None,
-                        name_cn: None,
-                        name_fr: None,
-                        name_ge: None,
-                        name_it: None,
-                        name_kr: None,
-                        name_sp: None,
-                        name_tw: None,
-                    },
-                );
+            if let Some(gm_customize_item_tbl) = parse::CstmItem::parse(gm_customize_item_tbl).await
+            {
+                for cstm_item in gm_customize_item_tbl.data {
+                    module_db.cstm_items.insert(
+                        cstm_item.id,
+                        CustomizeItem {
+                            bind_module: cstm_item.bind_module,
+                            chara: cstm_item.chara,
+                            part: cstm_item.parts,
+                            name: None,
+                            name_jp: Some(cstm_item.name.clone()),
+                            name_en: None,
+                            name_cn: None,
+                            name_fr: None,
+                            name_ge: None,
+                            name_it: None,
+                            name_kr: None,
+                            name_sp: None,
+                            name_tw: None,
+                        },
+                    );
+                }
             }
         }
 
         if let Some(chritm_prop) = &chritm_prop {
             // Suboptimal, parsing twice here
-            let modules = parse::Costume::parse(chritm_prop).await?;
-            let items = parse::CostumeItem::parse(chritm_prop).await?;
+            let modules = parse::Costume::parse(chritm_prop)
+                .await
+                .unwrap_or(BTreeMap::new());
+            let items = parse::CostumeItem::parse(chritm_prop)
+                .await
+                .unwrap_or(BTreeMap::new());
+
             for (_, module) in &mut module_db.modules {
                 let Some(costumes) = modules.get(&module.chara) else {
                     println!("Couldnt get costumes for chara");
@@ -391,98 +399,99 @@ impl ModuleDb {
         }
 
         if let Some(mod_str_array) = mod_str_array {
-            let mod_str_array = parse::ModStringArray::parse(mod_str_array).await?;
-            for (id, module) in &mut module_db.modules {
-                if let Some(data) = &mod_str_array.data {
-                    if let Some(modules) = &data.module {
-                        module.name = modules.get(id).cloned();
+            if let Some(mod_str_array) = parse::ModStringArray::parse(mod_str_array).await {
+                for (id, module) in &mut module_db.modules {
+                    if let Some(data) = &mod_str_array.data {
+                        if let Some(modules) = &data.module {
+                            module.name = modules.get(id).cloned();
+                        }
+                    }
+                    if let Some(data) = &mod_str_array.en {
+                        if let Some(modules) = &data.module {
+                            module.name_en = modules.get(id).cloned();
+                        }
+                    }
+                    if let Some(data) = &mod_str_array.cn {
+                        if let Some(modules) = &data.module {
+                            module.name_cn = modules.get(id).cloned();
+                        }
+                    }
+                    if let Some(data) = &mod_str_array.fr {
+                        if let Some(modules) = &data.module {
+                            module.name_fr = modules.get(id).cloned();
+                        }
+                    }
+                    if let Some(data) = &mod_str_array.ge {
+                        if let Some(modules) = &data.module {
+                            module.name_ge = modules.get(id).cloned();
+                        }
+                    }
+                    if let Some(data) = &mod_str_array.it {
+                        if let Some(modules) = &data.module {
+                            module.name_it = modules.get(id).cloned();
+                        }
+                    }
+                    if let Some(data) = &mod_str_array.kr {
+                        if let Some(modules) = &data.module {
+                            module.name_kr = modules.get(id).cloned();
+                        }
+                    }
+                    if let Some(data) = &mod_str_array.sp {
+                        if let Some(modules) = &data.module {
+                            module.name_sp = modules.get(id).cloned();
+                        }
+                    }
+                    if let Some(data) = &mod_str_array.tw {
+                        if let Some(modules) = &data.module {
+                            module.name_tw = modules.get(id).cloned();
+                        }
                     }
                 }
-                if let Some(data) = &mod_str_array.en {
-                    if let Some(modules) = &data.module {
-                        module.name_en = modules.get(id).cloned();
+                for (id, cstm_item) in &mut module_db.cstm_items {
+                    if let Some(data) = &mod_str_array.data {
+                        if let Some(customize) = &data.customize {
+                            cstm_item.name = customize.get(id).cloned();
+                        }
                     }
-                }
-                if let Some(data) = &mod_str_array.cn {
-                    if let Some(modules) = &data.module {
-                        module.name_cn = modules.get(id).cloned();
+                    if let Some(data) = &mod_str_array.en {
+                        if let Some(customize) = &data.customize {
+                            cstm_item.name_en = customize.get(id).cloned();
+                        }
                     }
-                }
-                if let Some(data) = &mod_str_array.fr {
-                    if let Some(modules) = &data.module {
-                        module.name_fr = modules.get(id).cloned();
+                    if let Some(data) = &mod_str_array.cn {
+                        if let Some(customize) = &data.customize {
+                            cstm_item.name_cn = customize.get(id).cloned();
+                        }
                     }
-                }
-                if let Some(data) = &mod_str_array.ge {
-                    if let Some(modules) = &data.module {
-                        module.name_ge = modules.get(id).cloned();
+                    if let Some(data) = &mod_str_array.fr {
+                        if let Some(customize) = &data.customize {
+                            cstm_item.name_fr = customize.get(id).cloned();
+                        }
                     }
-                }
-                if let Some(data) = &mod_str_array.it {
-                    if let Some(modules) = &data.module {
-                        module.name_it = modules.get(id).cloned();
+                    if let Some(data) = &mod_str_array.ge {
+                        if let Some(customize) = &data.customize {
+                            cstm_item.name_ge = customize.get(id).cloned();
+                        }
                     }
-                }
-                if let Some(data) = &mod_str_array.kr {
-                    if let Some(modules) = &data.module {
-                        module.name_kr = modules.get(id).cloned();
+                    if let Some(data) = &mod_str_array.it {
+                        if let Some(customize) = &data.customize {
+                            cstm_item.name_it = customize.get(id).cloned();
+                        }
                     }
-                }
-                if let Some(data) = &mod_str_array.sp {
-                    if let Some(modules) = &data.module {
-                        module.name_sp = modules.get(id).cloned();
+                    if let Some(data) = &mod_str_array.kr {
+                        if let Some(customize) = &data.customize {
+                            cstm_item.name_kr = customize.get(id).cloned();
+                        }
                     }
-                }
-                if let Some(data) = &mod_str_array.tw {
-                    if let Some(modules) = &data.module {
-                        module.name_tw = modules.get(id).cloned();
+                    if let Some(data) = &mod_str_array.sp {
+                        if let Some(customize) = &data.customize {
+                            cstm_item.name_sp = customize.get(id).cloned();
+                        }
                     }
-                }
-            }
-            for (id, cstm_item) in &mut module_db.cstm_items {
-                if let Some(data) = &mod_str_array.data {
-                    if let Some(customize) = &data.customize {
-                        cstm_item.name = customize.get(id).cloned();
-                    }
-                }
-                if let Some(data) = &mod_str_array.en {
-                    if let Some(customize) = &data.customize {
-                        cstm_item.name_en = customize.get(id).cloned();
-                    }
-                }
-                if let Some(data) = &mod_str_array.cn {
-                    if let Some(customize) = &data.customize {
-                        cstm_item.name_cn = customize.get(id).cloned();
-                    }
-                }
-                if let Some(data) = &mod_str_array.fr {
-                    if let Some(customize) = &data.customize {
-                        cstm_item.name_fr = customize.get(id).cloned();
-                    }
-                }
-                if let Some(data) = &mod_str_array.ge {
-                    if let Some(customize) = &data.customize {
-                        cstm_item.name_ge = customize.get(id).cloned();
-                    }
-                }
-                if let Some(data) = &mod_str_array.it {
-                    if let Some(customize) = &data.customize {
-                        cstm_item.name_it = customize.get(id).cloned();
-                    }
-                }
-                if let Some(data) = &mod_str_array.kr {
-                    if let Some(customize) = &data.customize {
-                        cstm_item.name_kr = customize.get(id).cloned();
-                    }
-                }
-                if let Some(data) = &mod_str_array.sp {
-                    if let Some(customize) = &data.customize {
-                        cstm_item.name_sp = customize.get(id).cloned();
-                    }
-                }
-                if let Some(data) = &mod_str_array.tw {
-                    if let Some(customize) = &data.customize {
-                        cstm_item.name_tw = customize.get(id).cloned();
+                    if let Some(data) = &mod_str_array.tw {
+                        if let Some(customize) = &data.customize {
+                            cstm_item.name_tw = customize.get(id).cloned();
+                        }
                     }
                 }
             }
@@ -530,5 +539,19 @@ impl ModuleDb {
         };
 
         Self::from_files(module_tbl, customize_tbl, chritm_prop, mod_str_array).await
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[tokio::test]
+    async fn test() {
+        let modules = ModuleDb::from_folder(
+            "/home/vixen/gb-parser/extracted/Popipo f dlc accessories & F2nd glasses/rom/",
+        )
+        .await
+        .unwrap();
+        dbg!(modules.cstm_items.len());
     }
 }
