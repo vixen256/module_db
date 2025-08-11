@@ -32,6 +32,7 @@ pub struct CstmItem {
     pub id: i32,
     pub name: String,
     pub parts: crate::ItemPart,
+    pub obj_id: i32,
 }
 
 #[derive(Clone)]
