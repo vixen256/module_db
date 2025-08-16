@@ -11,3 +11,4 @@ serde_divatree = { git = "https://github.com/vixen256/serde_divatree" }
 serde_with = { version = "3.12", features = ["macros"] }
 tokio = { version = "1.43", features = ["full"] }
 toml = "0.8"
+utoipa = { version = "5.4", optional = true }

@@ -1,9 +1,13 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
+#[cfg(feature = "utoipa")]
+use utoipa::ToSchema;
+
 mod parse;
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Chara {
     #[serde(rename = "MIK")]
@@ -83,6 +87,7 @@ impl TryFrom<i32> for Chara {
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ItemPart {
     Kami,
@@ -105,6 +110,7 @@ impl ToString for ItemPart {
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 #[repr(i32)]
 pub enum ItemSub {
@@ -235,12 +241,14 @@ impl ToString for ItemSub {
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 pub struct Costume {
     pub id: i32,
     pub items: Vec<CostumeItem>,
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 pub struct CostumeItem {
     pub id: i32,
     pub objset: Vec<String>,
@@ -248,6 +256,7 @@ pub struct CostumeItem {
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 pub struct Module {
     pub cos: Costume,
     pub chara: Chara,
@@ -264,6 +273,7 @@ pub struct Module {
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 pub struct CustomizeItem {
     pub bind_module: Option<i32>,
     pub chara: Chara,
@@ -282,6 +292,7 @@ pub struct CustomizeItem {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 pub struct ModuleDb {
     pub modules: BTreeMap<i32, Module>,
     pub cstm_items: BTreeMap<i32, CustomizeItem>,
