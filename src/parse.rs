@@ -96,7 +96,7 @@ pub fn clean_input(input: &str) -> String {
 }
 
 impl Module {
-    pub async fn parse<P: AsRef<std::path::Path>>(path: P) -> Option<DivaTbl<Self>> {
+    pub fn parse<P: AsRef<std::path::Path>>(path: P) -> Option<DivaTbl<Self>> {
         let path = path.as_ref();
         if !path.exists() {
             return None;
@@ -109,7 +109,7 @@ impl Module {
             let buf = file.to_buf_const()?;
             String::from_utf8(buf.to_vec()).ok()?
         } else if str.ends_with("gm_module_id.bin") {
-            tokio::fs::read_to_string(path).await.ok()?
+            std::fs::read_to_string(path).ok()?
         } else {
             return None;
         };
@@ -124,7 +124,7 @@ impl Module {
 }
 
 impl Costume {
-    pub async fn parse<P: AsRef<std::path::Path>>(
+    pub fn parse<P: AsRef<std::path::Path>>(
         path: P,
     ) -> Option<BTreeMap<crate::Chara, DivaTbl<Self>>> {
         let path = path.as_ref();
@@ -180,7 +180,7 @@ impl Costume {
 }
 
 impl CostumeItem {
-    pub async fn parse<P: AsRef<std::path::Path>>(
+    pub fn parse<P: AsRef<std::path::Path>>(
         path: P,
     ) -> Option<BTreeMap<crate::Chara, DivaTbl<Self>>> {
         let path = path.as_ref();
@@ -250,7 +250,7 @@ impl TryInto<crate::CostumeItem> for CostumeItem {
 }
 
 impl CstmItem {
-    pub async fn parse<P: AsRef<std::path::Path>>(path: P) -> Option<DivaTbl<Self>> {
+    pub fn parse<P: AsRef<std::path::Path>>(path: P) -> Option<DivaTbl<Self>> {
         let path = path.as_ref();
         if !path.exists() {
             return None;
@@ -263,7 +263,7 @@ impl CstmItem {
             let buf = file.to_buf_const()?;
             String::from_utf8(buf.to_vec()).ok()?
         } else if str.ends_with("gm_customize_item_id.bin") {
-            tokio::fs::read_to_string(path).await.ok()?
+            std::fs::read_to_string(path).ok()?
         } else {
             return None;
         };
@@ -304,13 +304,13 @@ pub struct ModStringArrayData {
 }
 
 impl ModStringArray {
-    pub async fn parse<P: AsRef<std::path::Path>>(path: P) -> Option<Self> {
+    pub fn parse<P: AsRef<std::path::Path>>(path: P) -> Option<Self> {
         let path = path.as_ref();
         if !path.exists() {
             return None;
         }
 
-        let contents = tokio::fs::read_to_string(path).await.ok()?;
+        let contents = std::fs::read_to_string(path).ok()?;
         toml::from_str(&contents).ok()
     }
 }

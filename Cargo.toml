@@ -9,6 +9,5 @@ itertools = "0.14"
 serde = { version = "1.0", features = ["derive"] }
 serde_divatree = { git = "https://github.com/vixen256/serde_divatree" }
 serde_with = { version = "3.12", features = ["macros"] }
-tokio = { version = "1.43", features = ["full"] }
 toml = "0.8"
 utoipa = { version = "5.4", optional = true }

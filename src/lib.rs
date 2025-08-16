@@ -299,7 +299,7 @@ pub struct ModuleDb {
 }
 
 impl ModuleDb {
-    pub async fn from_files<P: AsRef<std::path::Path>>(
+    pub fn from_files<P: AsRef<std::path::Path>>(
         gm_module_tbl: Option<P>,
         gm_customize_item_tbl: Option<P>,
         chritm_prop: Option<P>,
@@ -311,7 +311,7 @@ impl ModuleDb {
         };
 
         if let Some(gm_module_tbl) = gm_module_tbl {
-            if let Some(gm_module_tbl) = parse::Module::parse(gm_module_tbl).await {
+            if let Some(gm_module_tbl) = parse::Module::parse(gm_module_tbl) {
                 for module in gm_module_tbl.data {
                     let cos = module.cos.trim_start_matches("COS_").parse::<i32>().ok()? - 1;
                     module_db.modules.insert(
@@ -339,8 +339,7 @@ impl ModuleDb {
         }
 
         if let Some(gm_customize_item_tbl) = gm_customize_item_tbl {
-            if let Some(gm_customize_item_tbl) = parse::CstmItem::parse(gm_customize_item_tbl).await
-            {
+            if let Some(gm_customize_item_tbl) = parse::CstmItem::parse(gm_customize_item_tbl) {
                 for cstm_item in gm_customize_item_tbl.data {
                     module_db.cstm_items.insert(
                         cstm_item.id,
@@ -367,12 +366,8 @@ impl ModuleDb {
 
         if let Some(chritm_prop) = &chritm_prop {
             // Suboptimal, parsing twice here
-            let modules = parse::Costume::parse(chritm_prop)
-                .await
-                .unwrap_or(BTreeMap::new());
-            let items = parse::CostumeItem::parse(chritm_prop)
-                .await
-                .unwrap_or(BTreeMap::new());
+            let modules = parse::Costume::parse(chritm_prop).unwrap_or(BTreeMap::new());
+            let items = parse::CostumeItem::parse(chritm_prop).unwrap_or(BTreeMap::new());
 
             for (_, module) in &mut module_db.modules {
                 let Some(costumes) = modules.get(&module.chara) else {
@@ -412,7 +407,7 @@ impl ModuleDb {
         }
 
         if let Some(mod_str_array) = mod_str_array {
-            if let Some(mod_str_array) = parse::ModStringArray::parse(mod_str_array).await {
+            if let Some(mod_str_array) = parse::ModStringArray::parse(mod_str_array) {
                 for (id, module) in &mut module_db.modules {
                     if let Some(data) = &mod_str_array.data {
                         if let Some(modules) = &data.module {
@@ -517,7 +512,7 @@ impl ModuleDb {
         }
     }
 
-    pub async fn from_folder<P: AsRef<std::path::Path>>(path: P) -> Option<Self> {
+    pub fn from_folder<P: AsRef<std::path::Path>>(path: P) -> Option<Self> {
         let path = path.as_ref();
         if !path.is_dir() {
             return None;
@@ -551,6 +546,14 @@ impl ModuleDb {
             None
         };
 
-        Self::from_files(module_tbl, customize_tbl, chritm_prop, mod_str_array).await
+        Self::from_files(module_tbl, customize_tbl, chritm_prop, mod_str_array)
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    pub fn test() {}
 }
