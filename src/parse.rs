@@ -106,7 +106,7 @@ impl Module {
         let contents = if str.ends_with("gm_module_tbl.farc") {
             let farc = farc::Farc::from_file(path).ok()?;
             let file = farc.entries.get("gm_module_id.bin")?;
-            let buf = file.to_buf_const()?;
+            let buf = file.data.to_buf_const()?;
             String::from_utf8(buf.to_vec()).ok()?
         } else if str.ends_with("gm_module_id.bin") {
             std::fs::read_to_string(path).ok()?
@@ -155,7 +155,7 @@ impl Costume {
                 "ext" => crate::Chara::Extra,
                 _ => continue,
             };
-            let buf = data.to_buf_const()?;
+            let buf = data.data.to_buf_const()?;
             let data = String::from_utf8(buf.to_vec()).ok()?;
             let data = clean_input(&data);
             let data = data
@@ -211,7 +211,7 @@ impl CostumeItem {
                 "ext" => crate::Chara::Extra,
                 _ => continue,
             };
-            let buf = data.to_buf_const()?;
+            let buf = data.data.to_buf_const()?;
             let data = String::from_utf8(buf.to_vec()).ok()?;
             let data = clean_input(&data);
             let data = data
@@ -260,7 +260,7 @@ impl CstmItem {
         let contents = if str.ends_with("gm_customize_item_tbl.farc") {
             let farc = farc::Farc::from_file(path).ok()?;
             let file = farc.entries.get("gm_customize_item_id.bin")?;
-            let buf = file.to_buf_const()?;
+            let buf = file.data.to_buf_const()?;
             String::from_utf8(buf.to_vec()).ok()?
         } else if str.ends_with("gm_customize_item_id.bin") {
             std::fs::read_to_string(path).ok()?

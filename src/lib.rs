@@ -549,11 +549,3 @@ impl ModuleDb {
         Self::from_files(module_tbl, customize_tbl, chritm_prop, mod_str_array)
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    pub fn test() {}
-}
